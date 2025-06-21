@@ -43,8 +43,14 @@
  }
      function clearDisplay() {
           console.log('Clear button pressed.');
-
+          display.value = '0';
+          justCalculated = false;
           alert('Display cleared.');
+
+          display.style.backgroundColor = '#f0f0f0';
+          setTimeout(() => {
+               display.style.backgroundColor = '';
+          },150);
      }
 
      function deleteLast(){
