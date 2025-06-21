@@ -19,7 +19,7 @@
           display.value = value;
       } 
           else if (currentValue === '0' && value==='.') {
-               display.value = currentValue+value;
+               display.value = currentValue+value
           }
           else if(value==='.'){
                //Get the last number in display
@@ -45,7 +45,6 @@
           console.log('Clear button pressed.');
           display.value = '0';
           justCalculated = false;
-          alert('Display cleared.');
 
           display.style.backgroundColor = '#f0f0f0';
           setTimeout(() => {
@@ -73,6 +72,34 @@
           alert('Equals button was clicked.');
      
      }
+     document.addEventListener('keydown', function (event){
+     console.log('Key pressed',event.key);
+     
+     if(event.key>='0'&& event.key<='9'){
+          appendToDisplay(event.key);
+     }else if(event.key==='.'){
+          appendToDisplay('.');
+     }else if(event.key==='+'){
+          appendToDisplay('=');
+     }else if(event.key==='-'){
+          appendToDisplay('-');
+     }else if(event.key==='*'){
+          appendToDisplay('*')
+     }else if(event.key==='/'){
+          event.preventDefault();
+          appendToDisplay('/');}
+
+
+     else if(event.key==='Enter'|| event.key==='='){
+          calculate();}
+     else if(event.key==='Escape'||event.key==='C'){
+          clearDisplay();
+     }
+     else if(event.key==='Backscape'){
+          deleteLast()
+     }
+     })
+         
 
      document.addEventListener('DOMContentLoaded', () => {
           console.log('Calculater loaded successfully.');
