@@ -14,12 +14,21 @@
           return;
       }
 
-      //If current display show 0 and user ebters a number,we wanna replace the 0
+      //If current display show 0 and user enters a number,we wanna replace the 0
       if (currentValue === '0' && !isNaN(value)) {
           display.value = value;
       } 
           else if (currentValue === '0' && value==='.') {
                display.value = currentValue+value;
+          }
+          else if(value==='.'){
+               //Get the last number in display
+               let lastNumber = currentValue.split(/[\+\-\*\/]/).pop();
+               //Omly add the decimal if the current number doesnt have ont
+               if (!lastNumber.includes('.')) {
+                    display.value = currentValue + value;
+               } 
+
           }
           else{
                display.value = currentValue + value;
