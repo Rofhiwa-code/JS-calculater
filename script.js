@@ -38,7 +38,7 @@ function safeEval(expression) {
 function appendToDisplay(value) {
 console.log('Button pressed:', value);
 
-@@ -102,44 +125,74 @@
+
 }
 
 function calculate() {
