@@ -1,115 +1,118 @@
- //Reference display element
- const display= document.getElementById('display');
+// Refrence display element
+const display = document.getElementById('display');
 
- //Track if we have performed calculation
- let justCalculated = false;
+// Track if we have performed a calculation
+let justCalculated = false;
 
- function appendToDisplay(value){
-      console.log('Button presssed:', value);
+function isOperator(char) {
+return ['+', '-', '*', '/'].includes(char);
+}
 
-      let currentValue=display.value;
-      if (justCalculated && !isNaN(value)) {
-          display.value=value;
-          justCalculated = false;
-          return;
-      }
+function getLastChar() {
+return display.value.slice(-1);
+}
 
-      //If current display show 0 and user enters a number,we wanna replace the 0
-      if (currentValue === '0' && !isNaN(value)) {
-          display.value = value;
-      } 
-          else if (currentValue === '0' && value==='.') {
-               display.value = currentValue+value
-          }
-          else if(value==='.'){
-               //Get the last number in display
-               let lastNumber = currentValue.split(/[\+\-\*\/]/).pop();
-               //Omly add the decimal if the current number doesnt have ont
-               if (!lastNumber.includes('.')) {
-                    display.value = currentValue + value;
-               } 
+function safeEval(expression) {
+    try {
+        let jsExpression = expression
+            .replace(/x/g, '*')
+            .replace(/÷/g, '/');
 
-          }
-          else{
-               display.value = currentValue + value;
-          }
+        if (!/^[0-9+\-*/.() ]+$/.test(jsExpression)){
+            throw new Error('Invalid characters in expression');
+        }
 
-          //Reset the justCalculated to false flag when user starts typing
-          justCalculated = false;
+        const result = Function(' "use strict"; return (' + jsExpression + ')')();
 
-          console.log('Display updated to:',display.value);
-               
-          
- }
-     function clearDisplay() {
-          console.log('Clear button pressed.');
-          display.value = '0';
-          justCalculated = false;
+        if (!isFinite(result)) {
+            throw new Error('Invalid calculation result');
+        }
 
-          display.style.backgroundColor = '#f0f0f0';
-          setTimeout(() => {
-               display.style.backgroundColor = '';
-          },150);
-     }
+        return result;
+    } catch (error) {
+        console.error('Calcualtion error:', error);
+        return 'Error';
+    }
+}
 
-     function deleteLast(){
-          console.log('Backspace button pressed.');
-          let currentValue = display.value;
+function appendToDisplay(value) {
+console.log('Button pressed:', value);
 
-          //if they is only one character or its 0; reset to 0
-          if(currentValue.length<=1 || currentValue === '0'){
-               display.value = '0';
-          }
-          else{
-               display.value = currentValue.slice(0, -1);
-          }
-          alert('Backspace button was clicked.');
-     }
+@@ -102,44 +125,74 @@
+}
 
-     function calculate() {
-          console.log('Equals button pressed.');
+function calculate() {
+    console.log('Equals button pressed.');
+    let expression = display.value;
 
-          alert('Equals button was clicked.');
-     
-     }
-     document.addEventListener('keydown', function (event){
-     console.log('Key pressed',event.key);
-     
-     if(event.key>='0'&& event.key<='9'){
-          appendToDisplay(event.key);
-     }else if(event.key==='.'){
-          appendToDisplay('.');
-     }else if(event.key==='+'){
-          appendToDisplay('=');
-     }else if(event.key==='-'){
-          appendToDisplay('-');
-     }else if(event.key==='*'){
-          appendToDisplay('*')
-     }else if(event.key==='/'){
-          event.preventDefault();
-          appendToDisplay('/');}
+    // Dont calc if display is 0 or empty
+    if (expression === '0' || expression === ''){
+        return;
+    }
 
+    alert('Equals button was clicked');
+    // Dont calc if expression ends with operator
+    if (isOperator(getLastChar())){
+        return;
+    }
 
-     else if(event.key==='Enter'|| event.key==='='){
-          calculate();}
-     else if(event.key==='Escape'||event.key==='C'){
-          clearDisplay();
-     }
-     else if(event.key==='Backscape'){
-          deleteLast()
-     }
-     })
-         
+    let result = safeEval(expression);
 
-     document.addEventListener('DOMContentLoaded', () => {
-          console.log('Calculater loaded successfully.');
-          console.log('Display elemt',display);
+    if (result === 'Error') {
+        display.value = 'Error';
+        setTimeout(() => {
+            clearDisplay()
+        }, 2000);
+    } else {
+        if (Number.isInteger(result)) {
+            display.value = result.toString();
+        } else {
+            display.value = parseFloat(result.toFixed(10)).toString();
+        }
 
-          if(display){
-               console.log('Current display value:', display.value);
+        justCalculated = true;
+    }
 
-          }
-          else{
-               console.log('Display element not found.');
-          }
-     })
+    display.style.backgroundColor = '#e8f5e8';
+    setTimeout(() => {
+        display.style.backgroundColor = '';
+    }, 300);
+}
+
+document.addEventListener('keydown', function(event) {
+console.log('Key pressed', event.key);
+
+if (event.key >= '0' && event.key <= '9') {
+appendToDisplay(event.key);
+} else if (event.key === '.') {
+appendToDisplay('.');
+} else if (event.key === '+') {
+appendToDisplay('+');
+} else if (event.key === '-') {
+appendToDisplay('-');
+} else if (event.key === '*') {
+appendToDisplay('*');
+} else if (event.key === '/') {
+event.preventDefault();
+appendToDisplay('/');
+}
+
+else if (event.key === 'Enter' || event.key === '=') {
+calculate();
+} else if (event.key === 'Escape' || event.key === 'c' || event.key === 'C') {
+clearDisplay();
+} else if (event.key === 'Backspace') {
+deleteLast();
+}
+})
+
+document.addEventListener('DOMContentLoaded', function() {
+console.log('Calculator loaded successfully');
+console.log('Display element', display);
+
+if (display) {
+console.log('Current display value: ', display.value);
+} else {
+console.log('Display element not found');
+}
+})
